@@ -455,6 +455,156 @@ class ChartManager {
         
         return url;
     }
+
+    /**
+     * Create player histogram chart
+     * @param {string} playerId - Player ID
+     * @param {string} canvasId - Canvas element ID
+     */
+    createPlayerHistogram(playerId, canvasId) {
+        const data = this.dataManager.getChartData('player-histogram', playerId);
+        
+        if (!data || data.datasets[0].data.every(d => d === 0)) {
+            this.showEmptyChart(canvasId, 'Sem dados suficientes', 'Jogue mais partidas para ver a distribuição de scores');
+            return;
+        }
+
+        this.createChart(canvasId, 'bar', data, {
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Distribuição de Pontuações',
+                    color: '#f0f6fc',
+                    font: {
+                        family: 'Lexend',
+                        size: 16,
+                        weight: 'bold'
+                    }
+                },
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        callback: function(value) {
+                            return value + ' jogos';
+                        }
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Intervalo de Pontuação',
+                        color: '#8b949e'
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Create player evolution chart
+     * @param {string} playerId - Player ID  
+     * @param {string} canvasId - Canvas element ID
+     */
+    createPlayerEvolution(playerId, canvasId) {
+        const data = this.dataManager.getChartData('player-evolution', playerId);
+        
+        if (!data || data.datasets[0].data.length === 0) {
+            this.showEmptyChart(canvasId, 'Sem dados de evolução', 'Jogue algumas partidas para ver sua evolução');
+            return;
+        }
+
+        this.createChart(canvasId, 'line', data, {
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Evolução de Performance',
+                    color: '#f0f6fc',
+                    font: {
+                        family: 'Lexend',
+                        size: 16,
+                        weight: 'bold'
+                    }
+                },
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 300,
+                    title: {
+                        display: true,
+                        text: 'Pontuação',
+                        color: '#8b949e'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return value + ' pts';
+                        }
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Partidas',
+                        color: '#8b949e'
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Create player performance distribution chart
+     * @param {string} playerId - Player ID
+     * @param {string} canvasId - Canvas element ID  
+     */
+    createPlayerPerformanceDistribution(playerId, canvasId) {
+        const data = this.dataManager.getChartData('player-performance', playerId);
+        
+        if (!data || data.datasets[0].data.every(d => d === 0)) {
+            this.showEmptyChart(canvasId, 'Sem dados de performance', 'Jogue algumas partidas para ver a distribuição');
+            return;
+        }
+
+        this.createChart(canvasId, 'doughnut', data, {
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Distribuição de Jogadas',
+                    color: '#f0f6fc',
+                    font: {
+                        family: 'Lexend',
+                        size: 16,
+                        weight: 'bold'
+                    }
+                },
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Initialize player detail charts
+     * @param {string} playerId - Player ID
+     */
+    initializePlayerDetailCharts(playerId) {
+        this.createPlayerHistogram(playerId, `${playerId}-histogram-chart`);
+        this.createPlayerEvolution(playerId, `${playerId}-evolution-chart`);
+        this.createPlayerPerformanceDistribution(playerId, `${playerId}-performance-chart`);
+    }
 }
 
 // Export for use in other modules
