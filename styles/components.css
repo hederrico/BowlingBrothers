@@ -54,9 +54,7 @@
     font-family: var(--font-text);
 }
 
-/* Game Form */
 .game-form {
-    max-width: 800px;
     margin: 0 auto;
 }
 
@@ -180,18 +178,31 @@
 }
 
 .roll-input {
-    width: 40px;
-    height: 40px;
+    /* min-width: 50px; */
+    /* width: 50px; */
+    /* height: 50px; */
     background-color: var(--bg-primary);
     border: 1px solid var(--border-secondary);
     border-radius: var(--radius-sm);
     color: var(--text-primary);
     text-align: center;
     font-family: var(--font-mono);
-    font-size: 1rem;
+    font-size: 1.125rem;
     font-weight: 600;
     padding: 0;
     transition: all var(--transition-normal);
+}
+
+/* Remove number input spinners/arrows */
+.roll-input::-webkit-outer-spin-button,
+.roll-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.roll-input[type=number] {
+    -moz-appearance: textfield;
+    appearance: textfield;
 }
 
 .roll-input:focus {
@@ -521,6 +532,13 @@
     transform: translateX(0);
 }
 
+@media (max-width: 950px) {
+    .frames-container {
+        grid-template-columns: repeat(5, 1fr);
+        gap: var(--space-xs);
+    }
+}
+
 /* Responsive Design for Components */
 @media (max-width: 768px) {
     .stats-grid {
@@ -542,20 +560,16 @@
         gap: var(--space-lg);
     }
     
-    .frames-container {
-        grid-template-columns: repeat(5, 1fr);
-        gap: var(--space-xs);
-    }
-    
     .frame {
         min-height: 60px;
         padding: var(--space-xs);
     }
     
     .roll-input {
-        width: 35px;
-        height: 35px;
-        font-size: 0.9rem;
+        min-width: 45px;
+        width: 45px;
+        height: 45px;
+        font-size: 1rem;
     }
     
     .stats-tabs {
@@ -594,7 +608,7 @@
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 500px) {
     .stats-grid {
         grid-template-columns: 1fr;
     }
@@ -606,6 +620,13 @@
     
     .frames-container {
         grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .roll-input {
+        min-width: 40px;
+        width: 40px;
+        height: 40px;
+        font-size: 0.95rem;
     }
     
     .chart-item {

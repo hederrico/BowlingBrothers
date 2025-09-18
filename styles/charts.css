@@ -17,6 +17,7 @@
     font-weight: 600;
 }
 
+.chart-item canvas,
 .chart-container canvas {
     max-height: 400px;
     width: 100% !important;
