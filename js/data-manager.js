@@ -287,11 +287,137 @@ class DataManager {
     }
 
     /**
+     * Get player histogram data for individual analysis
+     * @param {string} playerId - Player ID ('brother1', 'brother2', 'brother3')
+     * @returns {Object} Histogram chart data
+     */
+    getPlayerHistogramData(playerId) {
+        const playerGames = this.getPlayerGames(playerId);
+        
+        if (playerGames.length === 0) {
+            return null;
+        }
+
+        // Define score intervals optimized for bowling (based on common scoring patterns)
+        const ranges = [
+            { label: '0-60', min: 0, max: 60, color: '#f85149' },      // Poor games
+            { label: '61-100', min: 61, max: 100, color: '#d29922' },   // Below average
+            { label: '101-140', min: 101, max: 140, color: '#58a6ff' }, // Average
+            { label: '141-180', min: 141, max: 180, color: '#3fb950' }, // Good
+            { label: '181-220', min: 181, max: 220, color: '#a5a5a5' }, // Very good
+            { label: '221-300', min: 221, max: 300, color: '#8b949e' }  // Excellent
+        ];
+
+        const distribution = ranges.map(range => {
+            const count = playerGames.filter(game => 
+                game.totalScore >= range.min && game.totalScore <= range.max
+            ).length;
+            return count;
+        });
+
+        // Calculate max frequency for color intensity
+        const maxCount = Math.max(...distribution);
+        
+        // Generate colors with varying intensity based on frequency
+        const backgroundColors = ranges.map((range, index) => {
+            const count = distribution[index];
+            if (count === 0) return range.color + '20'; // Very light
+            
+            const intensity = count / maxCount;
+            const opacity = Math.max(0.3, intensity); // Minimum 30% opacity
+            return range.color + Math.round(opacity * 255).toString(16).padStart(2, '0');
+        });
+
+        return {
+            labels: ranges.map(r => r.label),
+            datasets: [{
+                label: 'Frequência',
+                data: distribution,
+                backgroundColor: backgroundColors,
+                borderColor: ranges.map(r => r.color),
+                borderWidth: 2
+            }]
+        };
+    }
+
+    /**
+     * Get player evolution data for individual timeline
+     * @param {string} playerId - Player ID
+     * @returns {Object} Evolution chart data
+     */
+    getPlayerEvolutionData(playerId) {
+        const playerGames = this.getPlayerGames(playerId);
+        
+        if (playerGames.length === 0) {
+            return null;
+        }
+
+        const scores = playerGames.map(game => game.totalScore);
+        const labels = playerGames.map((_, index) => `Jogo ${index + 1}`);
+
+        return {
+            labels,
+            datasets: [{
+                label: 'Pontuação',
+                data: scores,
+                borderColor: '#58a6ff',
+                backgroundColor: '#58a6ff20',
+                tension: 0.3,
+                fill: true,
+                pointBackgroundColor: '#58a6ff',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 4
+            }]
+        };
+    }
+
+    /**
+     * Get player performance distribution (strikes, spares, misses)
+     * @param {string} playerId - Player ID
+     * @returns {Object} Pie chart data
+     */
+    getPlayerPerformanceDistribution(playerId) {
+        const playerGames = this.getPlayerGames(playerId);
+        
+        if (playerGames.length === 0) {
+            return null;
+        }
+
+        let totalStrikes = 0;
+        let totalSpares = 0;
+        let totalFrames = 0;
+
+        playerGames.forEach(game => {
+            totalStrikes += game.statistics.strikes;
+            totalSpares += game.statistics.spares;
+            totalFrames += 10; // Each game has 10 frames
+        });
+
+        const totalMisses = totalFrames - totalStrikes - totalSpares;
+
+        return {
+            labels: ['Strikes', 'Spares', 'Misses'],
+            datasets: [{
+                data: [totalStrikes, totalSpares, totalMisses],
+                backgroundColor: [
+                    '#3fb950', // Green for strikes
+                    '#58a6ff', // Blue for spares  
+                    '#f85149'  // Red for misses
+                ],
+                borderWidth: 2,
+                borderColor: '#21262d'
+            }]
+        };
+    }
+
+    /**
      * Get data for charts
      * @param {string} type - Chart type ('score-evolution', 'comparison', 'distribution', etc.)
+     * @param {string} playerId - Optional player ID for individual charts
      * @returns {Object} Chart data
      */
-    getChartData(type) {
+    getChartData(type, playerId = null) {
         switch (type) {
             case 'score-evolution':
                 return this.getScoreEvolutionData();
@@ -303,6 +429,12 @@ class DataManager {
                 return this.getStrikesSparesData();
             case 'timeline':
                 return this.getTimelineData();
+            case 'player-histogram':
+                return playerId ? this.getPlayerHistogramData(playerId) : null;
+            case 'player-evolution':
+                return playerId ? this.getPlayerEvolutionData(playerId) : null;
+            case 'player-performance':
+                return playerId ? this.getPlayerPerformanceDistribution(playerId) : null;
             default:
                 return null;
         }

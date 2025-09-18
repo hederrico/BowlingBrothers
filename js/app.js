@@ -32,6 +32,7 @@ class BowlingBrothersApp {
             // Set up navigation
             this.setupNavigation();
             this.setupStatisticsTabs();
+            this.setupPlayerDetailModal();
 
             // Load initial data
             this.loadDashboard();
@@ -196,6 +197,95 @@ class BowlingBrothersApp {
         players.forEach(playerId => {
             const stats = this.dataManager.calculatePlayerStats(playerId);
             this.updatePlayerCard(playerId, stats, playerNames[playerId]);
+            
+            // Load preview charts
+            this.loadPlayerPreviewCharts(playerId);
+        });
+    }
+
+    /**
+     * Load preview charts for player cards
+     */
+    loadPlayerPreviewCharts(playerId) {
+        // Create mini histogram preview
+        this.chartManager.createPlayerHistogram(playerId, `${playerId}-histogram-preview`);
+    }
+
+    /**
+     * Set up player detail modal
+     */
+    setupPlayerDetailModal() {
+        // Add event listeners to detail buttons
+        document.querySelectorAll('.player-detail-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const playerId = e.target.dataset.player || e.target.closest('.player-detail-btn').dataset.player;
+                this.openPlayerDetailModal(playerId);
+            });
+        });
+
+        // Add event listener to close button
+        document.getElementById('close-player-detail').addEventListener('click', () => {
+            this.closePlayerDetailModal();
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('player-detail-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'player-detail-modal') {
+                this.closePlayerDetailModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                this.closePlayerDetailModal();
+            }
+        });
+    }
+
+    /**
+     * Open player detail modal
+     */
+    openPlayerDetailModal(playerId) {
+        const playerNames = this.dataManager.getPlayerNames();
+        const playerName = playerNames[playerId];
+        const stats = this.dataManager.calculatePlayerStats(playerId);
+
+        // Update modal title
+        document.getElementById('player-detail-title').textContent = `Análise Detalhada - ${playerName}`;
+
+        // Update detail stats
+        document.getElementById('detail-best-score').textContent = stats.bestScore || '---';
+        document.getElementById('detail-average').textContent = stats.averageScore ? Math.round(stats.averageScore) : '---';
+        document.getElementById('detail-games').textContent = stats.gamesPlayed || '---';
+        document.getElementById('detail-strikes').textContent = stats.totalStrikes || '---';
+
+        // Show modal
+        const modal = document.getElementById('player-detail-modal');
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+
+        // Load detail charts
+        setTimeout(() => {
+            this.chartManager.initializePlayerDetailCharts(playerId);
+        }, 100);
+    }
+
+    /**
+     * Close player detail modal
+     */
+    closePlayerDetailModal() {
+        const modal = document.getElementById('player-detail-modal');
+        modal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+
+        // Destroy detail charts to free memory
+        ['player-detail-histogram', 'player-detail-evolution', 'player-detail-performance'].forEach(canvasId => {
+            const chart = this.chartManager.getChart(canvasId);
+            if (chart) {
+                chart.destroy();
+                delete this.chartManager.charts[canvasId];
+            }
         });
     }
 
