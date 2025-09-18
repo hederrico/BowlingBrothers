@@ -36,6 +36,7 @@ class BowlingBrothersApp {
             // Load initial data
             this.loadDashboard();
             this.loadPlayerStats();
+            this.updatePlayerNamesInUI();
 
             console.log('Bowling Brothers App initialized successfully');
         } catch (error) {
@@ -87,6 +88,9 @@ class BowlingBrothersApp {
                 break;
             case 'players':
                 this.loadPlayerStats();
+                break;
+            case 'settings':
+                this.loadSettings();
                 break;
         }
     }
@@ -177,6 +181,9 @@ class BowlingBrothersApp {
         this.updateStatElement('best-collective-date', globalStats.bestCollectiveScore.date || '---');
         this.updateStatElement('total-games', globalStats.totalGames);
         this.updateStatElement('total-strikes', globalStats.totalStrikes);
+        this.updateStatElement('max-consecutive-strikes', globalStats.maxConsecutiveStrikes || 0);
+        this.updateStatElement('perfect-games', globalStats.perfectGames || 0);
+        this.updateStatElement('average-score', globalStats.averageGameScore || 0);
     }
 
     /**
@@ -184,31 +191,153 @@ class BowlingBrothersApp {
      */
     loadPlayerStats() {
         const players = ['brother1', 'brother2', 'brother3'];
+        const playerNames = this.dataManager.getPlayerNames();
         
         players.forEach(playerId => {
             const stats = this.dataManager.calculatePlayerStats(playerId);
-            this.updatePlayerCard(playerId, stats);
+            this.updatePlayerCard(playerId, stats, playerNames[playerId]);
+        });
+    }
+
+    /**
+     * Load settings section
+     */
+    loadSettings() {
+        const playerNames = this.dataManager.getPlayerNames();
+        
+        // Update name inputs
+        document.getElementById('player1-name').value = playerNames.brother1;
+        document.getElementById('player2-name').value = playerNames.brother2;
+        document.getElementById('player3-name').value = playerNames.brother3;
+        
+        // Bind settings events if not already bound
+        if (!this.settingsEventsBound) {
+            this.bindSettingsEvents();
+            this.settingsEventsBound = true;
+        }
+    }
+
+    /**
+     * Bind settings event listeners
+     */
+    bindSettingsEvents() {
+        // Save names button
+        document.getElementById('save-names')?.addEventListener('click', () => {
+            this.savePlayerNames();
+        });
+
+        // Data management buttons
+        document.getElementById('add-sample')?.addEventListener('click', () => {
+            this.addSampleData();
+        });
+
+        document.getElementById('export-data')?.addEventListener('click', () => {
+            this.exportData();
+        });
+
+        document.getElementById('import-data')?.addEventListener('click', () => {
+            document.getElementById('import-file').click();
+        });
+
+        document.getElementById('import-file')?.addEventListener('change', (e) => {
+            if (e.target.files[0]) {
+                this.importData(e.target.files[0]);
+                e.target.value = ''; // Reset file input
+            }
+        });
+
+        document.getElementById('clear-data')?.addEventListener('click', () => {
+            this.clearAllData();
+        });
+    }
+
+    /**
+     * Save player names
+     */
+    savePlayerNames() {
+        const newNames = {
+            brother1: document.getElementById('player1-name').value.trim() || 'Irmão 1',
+            brother2: document.getElementById('player2-name').value.trim() || 'Irmão 2',
+            brother3: document.getElementById('player3-name').value.trim() || 'Irmão 3'
+        };
+
+        this.dataManager.updatePlayerNames(newNames);
+        this.showSuccess('Nomes dos jogadores salvos com sucesso!');
+        
+        // Update all UI elements that show player names
+        this.updatePlayerNamesInUI();
+        this.refreshAll();
+    }
+
+    /**
+     * Update player names throughout the UI
+     */
+    updatePlayerNamesInUI() {
+        const playerNames = this.dataManager.getPlayerNames();
+        
+        // Update game board
+        this.gameManager.updatePlayerNames(playerNames);
+        
+        // Update player cards
+        document.querySelectorAll('.player-card').forEach(card => {
+            const playerId = card.dataset.player;
+            const nameElement = card.querySelector('h3');
+            if (nameElement && playerNames[playerId]) {
+                nameElement.textContent = playerNames[playerId];
+            }
+        });
+
+        // Update player checkboxes
+        document.querySelectorAll('.player-checkbox span').forEach((span, index) => {
+            const playerId = ['brother1', 'brother2', 'brother3'][index];
+            if (playerNames[playerId]) {
+                span.textContent = playerNames[playerId];
+            }
         });
     }
 
     /**
      * Update player card with statistics
      */
-    updatePlayerCard(playerId, stats) {
+    updatePlayerCard(playerId, stats, playerName = null) {
         const playerCard = document.querySelector(`.player-card[data-player="${playerId}"]`);
         if (!playerCard) return;
 
+        // Update player name if provided
+        if (playerName) {
+            const nameElement = playerCard.querySelector('h3');
+            if (nameElement) {
+                nameElement.textContent = playerName;
+            }
+        }
+
         const statElements = {
             'best-score': stats.bestScore || '---',
+            'worst-score': stats.worstScore || '---',
             'average': stats.averageScore ? Math.round(stats.averageScore) : '---',
+            'games-played': stats.gamesPlayed || '---',
             'strikes': stats.totalStrikes || '---',
-            'spares': stats.totalSpares || '---'
+            'spares': stats.totalSpares || '---',
+            'max-strikes': stats.maxConsecutiveStrikes || '---',
+            'improvement': stats.improvementTrend !== undefined ? 
+                (stats.improvementTrend > 0 ? `+${stats.improvementTrend}` : 
+                 stats.improvementTrend < 0 ? `${stats.improvementTrend}` : '0') : '---'
         };
 
         for (const [statName, value] of Object.entries(statElements)) {
             const element = playerCard.querySelector(`[data-stat="${statName}"]`);
             if (element) {
                 element.textContent = value;
+                
+                // Add improvement styling
+                if (statName === 'improvement' && stats.improvementTrend !== undefined) {
+                    element.classList.remove('positive', 'negative');
+                    if (stats.improvementTrend > 0) {
+                        element.classList.add('positive');
+                    } else if (stats.improvementTrend < 0) {
+                        element.classList.add('negative');
+                    }
+                }
             }
         }
     }

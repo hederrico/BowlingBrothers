@@ -14,8 +14,8 @@
     <link rel="stylesheet" href="styles/charts.css">
     
     <!-- External Libraries -->
-    <script src="libs/jquery.min.js"></script>
-    <script src="libs/chart.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
 </head>
 <body>
     <!-- Header -->
@@ -31,6 +31,7 @@
                 <button class="nav-btn" data-section="new-game">Nova Partida</button>
                 <button class="nav-btn" data-section="statistics">Estatísticas</button>
                 <button class="nav-btn" data-section="players">Jogadores</button>
+                <button class="nav-btn" data-section="settings">Configurações</button>
             </nav>
         </div>
     </header>
@@ -66,6 +67,21 @@
                     <div class="stat-card">
                         <h3>Strikes Totais</h3>
                         <div class="stat-value" id="total-strikes">0</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <h3>Maior Sequência de Strikes</h3>
+                        <div class="stat-value" id="max-consecutive-strikes">0</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <h3>Jogos Perfeitos</h3>
+                        <div class="stat-value" id="perfect-games">0</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <h3>Média Geral</h3>
+                        <div class="stat-value" id="average-score">0</div>
                     </div>
                 </div>
                 
@@ -174,16 +190,32 @@
                                 <span class="stat-number" data-stat="best-score">---</span>
                             </div>
                             <div class="player-stat">
+                                <span>Pior Score</span>
+                                <span class="stat-number" data-stat="worst-score">---</span>
+                            </div>
+                            <div class="player-stat">
                                 <span>Média</span>
                                 <span class="stat-number" data-stat="average">---</span>
                             </div>
                             <div class="player-stat">
-                                <span>Strikes</span>
+                                <span>Partidas Jogadas</span>
+                                <span class="stat-number" data-stat="games-played">---</span>
+                            </div>
+                            <div class="player-stat">
+                                <span>Total Strikes</span>
                                 <span class="stat-number" data-stat="strikes">---</span>
                             </div>
                             <div class="player-stat">
-                                <span>Spares</span>
+                                <span>Total Spares</span>
                                 <span class="stat-number" data-stat="spares">---</span>
+                            </div>
+                            <div class="player-stat">
+                                <span>Sequência Max Strikes</span>
+                                <span class="stat-number" data-stat="max-strikes">---</span>
+                            </div>
+                            <div class="player-stat">
+                                <span>Tendência</span>
+                                <span class="stat-number improvement" data-stat="improvement">---</span>
                             </div>
                         </div>
                     </div>
@@ -199,16 +231,32 @@
                                 <span class="stat-number" data-stat="best-score">---</span>
                             </div>
                             <div class="player-stat">
+                                <span>Pior Score</span>
+                                <span class="stat-number" data-stat="worst-score">---</span>
+                            </div>
+                            <div class="player-stat">
                                 <span>Média</span>
                                 <span class="stat-number" data-stat="average">---</span>
                             </div>
                             <div class="player-stat">
-                                <span>Strikes</span>
+                                <span>Partidas Jogadas</span>
+                                <span class="stat-number" data-stat="games-played">---</span>
+                            </div>
+                            <div class="player-stat">
+                                <span>Total Strikes</span>
                                 <span class="stat-number" data-stat="strikes">---</span>
                             </div>
                             <div class="player-stat">
-                                <span>Spares</span>
+                                <span>Total Spares</span>
                                 <span class="stat-number" data-stat="spares">---</span>
+                            </div>
+                            <div class="player-stat">
+                                <span>Sequência Max Strikes</span>
+                                <span class="stat-number" data-stat="max-strikes">---</span>
+                            </div>
+                            <div class="player-stat">
+                                <span>Tendência</span>
+                                <span class="stat-number improvement" data-stat="improvement">---</span>
                             </div>
                         </div>
                     </div>
@@ -224,18 +272,73 @@
                                 <span class="stat-number" data-stat="best-score">---</span>
                             </div>
                             <div class="player-stat">
+                                <span>Pior Score</span>
+                                <span class="stat-number" data-stat="worst-score">---</span>
+                            </div>
+                            <div class="player-stat">
                                 <span>Média</span>
                                 <span class="stat-number" data-stat="average">---</span>
                             </div>
                             <div class="player-stat">
-                                <span>Strikes</span>
+                                <span>Partidas Jogadas</span>
+                                <span class="stat-number" data-stat="games-played">---</span>
+                            </div>
+                            <div class="player-stat">
+                                <span>Total Strikes</span>
                                 <span class="stat-number" data-stat="strikes">---</span>
                             </div>
                             <div class="player-stat">
-                                <span>Spares</span>
+                                <span>Total Spares</span>
                                 <span class="stat-number" data-stat="spares">---</span>
                             </div>
+                            <div class="player-stat">
+                                <span>Sequência Max Strikes</span>
+                                <span class="stat-number" data-stat="max-strikes">---</span>
+                            </div>
+                            <div class="player-stat">
+                                <span>Tendência</span>
+                                <span class="stat-number improvement" data-stat="improvement">---</span>
+                            </div>
                         </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Settings Section -->
+            <section id="settings" class="section">
+                <div class="section-header">
+                    <h2>Configurações</h2>
+                    <p>Personalize os nomes dos jogadores e outras configurações</p>
+                </div>
+                
+                <div class="settings-container">
+                    <div class="settings-group">
+                        <h3>Nomes dos Jogadores</h3>
+                        <div class="name-inputs">
+                            <div class="name-input-group">
+                                <label for="player1-name">Jogador 1:</label>
+                                <input type="text" id="player1-name" class="name-input" value="Irmão 1" maxlength="20">
+                            </div>
+                            <div class="name-input-group">
+                                <label for="player2-name">Jogador 2:</label>
+                                <input type="text" id="player2-name" class="name-input" value="Irmão 2" maxlength="20">
+                            </div>
+                            <div class="name-input-group">
+                                <label for="player3-name">Jogador 3:</label>
+                                <input type="text" id="player3-name" class="name-input" value="Irmão 3" maxlength="20">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" id="save-names">Salvar Nomes</button>
+                    </div>
+                    
+                    <div class="settings-group">
+                        <h3>Dados</h3>
+                        <div class="data-actions">
+                            <button class="btn btn-secondary" id="add-sample">Adicionar Dados de Exemplo</button>
+                            <button class="btn btn-secondary" id="export-data">Exportar Dados</button>
+                            <button class="btn btn-secondary" id="import-data">Importar Dados</button>
+                            <button class="btn btn-warning" id="clear-data">Limpar Todos os Dados</button>
+                        </div>
+                        <input type="file" id="import-file" accept=".json" style="display: none;">
                     </div>
                 </div>
             </section>

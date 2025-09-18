@@ -180,16 +180,30 @@
 }
 
 .roll-input {
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     background-color: var(--bg-primary);
     border: 1px solid var(--border-secondary);
     border-radius: var(--radius-sm);
     color: var(--text-primary);
     text-align: center;
     font-family: var(--font-mono);
-    font-size: 0.875rem;
+    font-size: 1rem;
+    font-weight: 600;
     padding: 0;
+    transition: all var(--transition-normal);
+}
+
+.roll-input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    background-color: var(--bg-secondary);
+    box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
+}
+
+.roll-input:hover {
+    border-color: var(--accent-primary);
+    background-color: var(--bg-secondary);
 }
 
 .frame-total {
@@ -366,6 +380,18 @@
     font-size: 1.125rem;
 }
 
+.player-stat .improvement {
+    color: var(--text-secondary);
+}
+
+.player-stat .improvement.positive {
+    color: var(--accent-success);
+}
+
+.player-stat .improvement.negative {
+    color: var(--accent-error);
+}
+
 /* Chart Grid */
 .chart-grid {
     display: grid;
@@ -384,6 +410,82 @@
     color: var(--text-primary);
     margin-bottom: var(--space-lg);
     text-align: center;
+}
+
+/* Settings Section */
+.settings-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.settings-group {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    margin-bottom: var(--space-xl);
+}
+
+.settings-group h3 {
+    color: var(--text-primary);
+    margin-bottom: var(--space-lg);
+    font-weight: 600;
+}
+
+.name-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.name-input-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.name-input-group label {
+    min-width: 100px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.name-input {
+    flex: 1;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    color: var(--text-primary);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    font-family: var(--font-text);
+    font-size: 1rem;
+    transition: all var(--transition-normal);
+}
+
+.name-input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    background-color: var(--bg-secondary);
+    box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
+}
+
+.data-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    justify-content: center;
+}
+
+.btn-warning {
+    background-color: var(--accent-warning);
+    border-color: var(--accent-warning);
+    color: var(--bg-primary);
+}
+
+.btn-warning:hover {
+    background-color: #b8860b;
+    border-color: #b8860b;
 }
 
 /* Toast Notifications */
@@ -451,9 +553,9 @@
     }
     
     .roll-input {
-        width: 25px;
-        height: 25px;
-        font-size: 0.75rem;
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
     }
     
     .stats-tabs {
@@ -469,6 +571,26 @@
     .game-actions .btn {
         width: 100%;
         max-width: 200px;
+    }
+    
+    .name-input-group {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-sm);
+    }
+    
+    .name-input-group label {
+        min-width: auto;
+    }
+    
+    .data-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .data-actions .btn {
+        width: 100%;
+        max-width: 250px;
     }
 }
 

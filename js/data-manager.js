@@ -46,7 +46,14 @@ class DataManager {
                 brother2: { name: 'Irmão 2', games: [] },
                 brother3: { name: 'Irmão 3', games: [] }
             },
-            sessions: []
+            sessions: [],
+            settings: {
+                playerNames: {
+                    brother1: 'Irmão 1',
+                    brother2: 'Irmão 2',
+                    brother3: 'Irmão 3'
+                }
+            }
         };
     }
 
@@ -248,6 +255,19 @@ class DataManager {
             .reduce((best, [date, score]) => score > best.score ? { date, score } : best, 
                    { date: '', score: 0 });
 
+        // Calculate additional metrics
+        let maxConsecutiveStrikes = 0;
+        let perfectGames = 0;
+
+        for (const session of sessions) {
+            for (const [playerId, game] of Object.entries(session.games)) {
+                maxConsecutiveStrikes = Math.max(maxConsecutiveStrikes, game.statistics.maxConsecutiveStrikes || 0);
+                if (game.totalScore === 300) {
+                    perfectGames++;
+                }
+            }
+        }
+
         return {
             totalSessions: sessions.length,
             totalGames,
@@ -260,7 +280,9 @@ class DataManager {
             bestDay: {
                 date: bestDayEntry.date ? new Date(bestDayEntry.date).toLocaleDateString('pt-BR') : '',
                 totalScore: bestDayEntry.score
-            }
+            },
+            maxConsecutiveStrikes,
+            perfectGames
         };
     }
 
@@ -448,6 +470,39 @@ class DataManager {
      */
     exportData() {
         return JSON.stringify(this.data, null, 2);
+    }
+
+    /**
+     * Update player names
+     * @param {Object} names - Object with player names
+     */
+    updatePlayerNames(names) {
+        // Update settings
+        if (!this.data.settings) {
+            this.data.settings = { playerNames: {} };
+        }
+        this.data.settings.playerNames = { ...names };
+
+        // Update player objects
+        for (const [playerId, name] of Object.entries(names)) {
+            if (this.data.players[playerId]) {
+                this.data.players[playerId].name = name;
+            }
+        }
+
+        this.saveData();
+    }
+
+    /**
+     * Get player names
+     * @returns {Object} Object with player names
+     */
+    getPlayerNames() {
+        return this.data.settings?.playerNames || {
+            brother1: 'Irmão 1',
+            brother2: 'Irmão 2',
+            brother3: 'Irmão 3'
+        };
     }
 
     /**

@@ -499,6 +499,18 @@ class GameManager {
     }
 
     /**
+     * Update player names
+     */
+    updatePlayerNames(playerNames) {
+        for (const [playerId, name] of Object.entries(playerNames)) {
+            if (this.currentGame.players[playerId]) {
+                this.currentGame.players[playerId].name = name;
+            }
+        }
+        this.renderGameBoard();
+    }
+
+    /**
      * Get current game state
      */
     getCurrentGame() {
