@@ -601,9 +601,9 @@ class ChartManager {
      * @param {string} playerId - Player ID
      */
     initializePlayerDetailCharts(playerId) {
-        this.createPlayerHistogram(playerId, `${playerId}-histogram-chart`);
-        this.createPlayerEvolution(playerId, `${playerId}-evolution-chart`);
-        this.createPlayerPerformanceDistribution(playerId, `${playerId}-performance-chart`);
+        this.createPlayerHistogram(playerId, 'player-detail-histogram');
+        this.createPlayerEvolution(playerId, 'player-detail-evolution');
+        this.createPlayerPerformanceDistribution(playerId, 'player-detail-performance');
     }
 }
 
